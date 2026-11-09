@@ -1,0 +1,46 @@
+{% extends "ids_app/base.html" %}
+{% block title %}Run LSTM — XAI-IDS{% endblock %}
+{% block content %}
+<div class="page-head">
+  <p class="eyebrow">Step 4 of 8</p>
+  <h2>Run LSTM Algorithm</h2>
+  <p>Trains (first run) or loads cached weights for an <code>LSTM(32) &rarr; Dropout(0.3) &rarr; Dense(32, relu) &rarr; Dense(softmax)</code> classifier, stored at <code>model/lstm_weights.hdf5</code>.</p>
+</div>
+
+<article class="card card-cyan">
+  <div class="card-head"><span class="dot {% if metric %}on{% endif %}"></span>Run LSTM</div>
+  {% if not has_split %}
+    <p class="lead">You need to complete the Train / Test Split first.</p>
+    <a class="btn btn-ghost" href="{% url 'split' %}">&larr; Go to Split</a>
+  {% else %}
+    <form action="{% url 'lstm' %}" method="post" class="card-form">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-cyan">Run LSTM</button>
+    </form>
+  {% endif %}
+</article>
+
+{% if metric %}
+<section class="panel">
+  <h3>LSTM metrics</h3>
+  <div class="stat-row">
+    <div class="stat-pill cyan"><div class="label">Accuracy</div><div class="value">{{ metric.accuracy }}%</div></div>
+    <div class="stat-pill magenta"><div class="label">Precision</div><div class="value">{{ metric.precision }}%</div></div>
+    <div class="stat-pill gold"><div class="label">Recall</div><div class="value">{{ metric.recall }}%</div></div>
+    <div class="stat-pill safe"><div class="label">F1 Score</div><div class="value">{{ metric.fscore }}%</div></div>
+  </div>
+</section>
+{% endif %}
+
+{% if image %}
+<section class="panel">
+  <h3>Confusion matrix &amp; ROC curve</h3>
+  <img class="plot" src="data:image/png;base64,{{ image }}" alt="LSTM confusion matrix and ROC curve">
+</section>
+{% endif %}
+
+<div class="pagination">
+  <a class="btn btn-ghost" href="{% url 'split' %}">&larr; Back: Split</a>
+  <a class="btn btn-cyan" href="{% url 'tcn' %}">Next: TCN &rarr;</a>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "ids_app/base.html" %}
+{% block title %}XAI-IDS — Home{% endblock %}
+{% block content %}
+<div class="page-head">
+  <p class="eyebrow">Overview</p>
+  <h2>Explainable Intrusion Detection</h2>
+  <p>Walk through the pipeline one page at a time &mdash; upload traffic data, preprocess it, split it, train LSTM &amp; TCN, compare them, explain their decisions with SHAP, then predict on new records. Each step remembers your progress.</p>
+</div>
+
+<div class="explain-grid">
+  <article class="card card-cyan">
+    <div class="card-head"><span class="dot {% if pipeline_steps.upload %}on{% endif %}"></span>1 &middot; Upload Dataset</div>
+    <p class="lead">{% if pipeline_dataset_name %}Loaded <strong>{{ pipeline_dataset_name }}</strong>.{% else %}Load CIC&#8209;IDS2017.csv or your own CSV.{% endif %}</p>
+    <a class="btn btn-cyan" href="{% url 'upload' %}">Go to Upload &rarr;</a>
+  </article>
+
+  <article class="card card-magenta">
+    <div class="card-head"><span class="dot {% if pipeline_steps.preprocess %}on{% endif %}"></span>2 &middot; Preprocess</div>
+    <p class="lead">Encode categorical columns and scale features with StandardScaler.</p>
+    <a class="btn btn-magenta" href="{% url 'preprocess' %}">Go to Preprocess &rarr;</a>
+  </article>
+
+  <article class="card card-gold">
+    <div class="card-head"><span class="dot {% if pipeline_steps.split %}on{% endif %}"></span>3 &middot; Train / Test Split</div>
+    <p class="lead">80/20 split, reshaped into sequences for the neural nets.</p>
+    <a class="btn btn-gold" href="{% url 'split' %}">Go to Split &rarr;</a>
+  </article>
+
+  <article class="card card-cyan">
+    <div class="card-head"><span class="dot {% if pipeline_steps.lstm %}on{% endif %}"></span>4 &middot; Run LSTM</div>
+    <p class="lead">{% if metrics.LSTM %}Accuracy {{ metrics.LSTM.accuracy }}%.{% else %}Train or load the LSTM classifier.{% endif %}</p>
+    <a class="btn btn-cyan" href="{% url 'lstm' %}">Go to LSTM &rarr;</a>
+  </article>
+
+  <article class="card card-magenta">
+    <div class="card-head"><span class="dot {% if pipeline_steps.tcn %}on{% endif %}"></span>5 &middot; Run TCN</div>
+    <p class="lead">{% if metrics.TCN %}Accuracy {{ metrics.TCN.accuracy }}%.{% else %}Train or load the Temporal Convolutional Network.{% endif %}</p>
+    <a class="btn btn-magenta" href="{% url 'tcn' %}">Go to TCN &rarr;</a>
+  </article>
+
+  <article class="card card-gold">
+    <div class="card-head"><span class="dot {% if pipeline_steps.compare %}on{% endif %}"></span>6 &middot; Compare</div>
+    <p class="lead">LSTM vs TCN across Accuracy, Precision, Recall, F1.</p>
+    <a class="btn btn-gold" href="{% url 'compare' %}">Go to Compare &rarr;</a>
+  </article>
+
+  <article class="card card-cyan">
+    <div class="card-head"><span class="dot {% if pipeline_steps.explain_summary or pipeline_steps.explain_violin %}on{% endif %}"></span>7 &middot; Explain</div>
+    <p class="lead">SHAP summary &amp; violin plots showing feature influence.</p>
+    <a class="btn btn-cyan" href="{% url 'explain' %}">Go to Explain &rarr;</a>
+  </article>
+
+  <article class="card card-magenta">
+    <div class="card-head"><span class="dot {% if pipeline_steps.predict %}on{% endif %}"></span>8 &middot; Predict</div>
+    <p class="lead">Run the trained LSTM on new, unlabelled flow records.</p>
+    <a class="btn btn-magenta" href="{% url 'predict' %}">Go to Predict &rarr;</a>
+  </article>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "ids_app/base.html" %}
+{% block title %}Run TCN — XAI-IDS{% endblock %}
+{% block content %}
+<div class="page-head">
+  <p class="eyebrow">Step 5 of 8</p>
+  <h2>Run TCN Algorithm</h2>
+  <p>Trains (first run) or loads cached weights for a Temporal Convolutional Network (<code>nb_filters=20, kernel_size=6, dilations=2^0..2^8</code>), stored at <code>model/tcn_weights.hdf5</code>.</p>
+</div>
+
+<article class="card card-magenta">
+  <div class="card-head"><span class="dot {% if metric %}on{% endif %}"></span>Run TCN</div>
+  {% if not has_split %}
+    <p class="lead">You need to complete the Train / Test Split first.</p>
+    <a class="btn btn-ghost" href="{% url 'split' %}">&larr; Go to Split</a>
+  {% else %}
+    <form action="{% url 'tcn' %}" method="post" class="card-form">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-magenta">Run TCN</button>
+    </form>
+  {% endif %}
+</article>
+
+{% if metric %}
+<section class="panel">
+  <h3>TCN metrics</h3>
+  <div class="stat-row">
+    <div class="stat-pill cyan"><div class="label">Accuracy</div><div class="value">{{ metric.accuracy }}%</div></div>
+    <div class="stat-pill magenta"><div class="label">Precision</div><div class="value">{{ metric.precision }}%</div></div>
+    <div class="stat-pill gold"><div class="label">Recall</div><div class="value">{{ metric.recall }}%</div></div>
+    <div class="stat-pill safe"><div class="label">F1 Score</div><div class="value">{{ metric.fscore }}%</div></div>
+  </div>
+</section>
+{% endif %}
+
+{% if image %}
+<section class="panel">
+  <h3>Confusion matrix &amp; ROC curve</h3>
+  <img class="plot" src="data:image/png;base64,{{ image }}" alt="TCN confusion matrix and ROC curve">
+</section>
+{% endif %}
+
+<div class="pagination">
+  <a class="btn btn-ghost" href="{% url 'lstm' %}">&larr; Back: LSTM</a>
+  <a class="btn btn-magenta" href="{% url 'compare' %}">Next: Compare &rarr;</a>
+</div>
+{% endblock %}

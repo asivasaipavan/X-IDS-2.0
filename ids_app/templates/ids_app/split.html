@@ -1,0 +1,38 @@
+{% extends "ids_app/base.html" %}
+{% block title %}Train / Test Split — XAI-IDS{% endblock %}
+{% block content %}
+<div class="page-head">
+  <p class="eyebrow">Step 3 of 8</p>
+  <h2>Train / Test Split</h2>
+  <p>Features are reshaped into 3-D sequences for the neural networks, then split 80% train / 20% test.</p>
+</div>
+
+<article class="card card-gold">
+  <div class="card-head"><span class="dot {% if info %}on{% endif %}"></span>Split the dataset</div>
+  {% if not has_preprocessed %}
+    <p class="lead">You need to preprocess the dataset first.</p>
+    <a class="btn btn-ghost" href="{% url 'preprocess' %}">&larr; Go to Preprocess</a>
+  {% else %}
+    <form action="{% url 'split' %}" method="post" class="card-form">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-gold">Split Dataset (80 / 20)</button>
+    </form>
+  {% endif %}
+</article>
+
+{% if info %}
+<section class="panel">
+  <h3>Split summary</h3>
+  <div class="stat-row">
+    <div class="stat-pill cyan"><div class="label">Total records</div><div class="value">{{ info.total }}</div></div>
+    <div class="stat-pill safe"><div class="label">Training (80%)</div><div class="value">{{ info.train }}</div></div>
+    <div class="stat-pill gold"><div class="label">Testing (20%)</div><div class="value">{{ info.test }}</div></div>
+  </div>
+</section>
+{% endif %}
+
+<div class="pagination">
+  <a class="btn btn-ghost" href="{% url 'preprocess' %}">&larr; Back: Preprocess</a>
+  <a class="btn btn-gold" href="{% url 'lstm' %}">Next: LSTM &rarr;</a>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "ids_app/base.html" %}
+{% block title %}Compare LSTM vs TCN — XAI-IDS{% endblock %}
+{% block content %}
+<div class="page-head">
+  <p class="eyebrow">Step 6 of 8</p>
+  <h2>Comparison Graph</h2>
+  <p>A grouped bar chart of LSTM vs TCN across Accuracy, Precision, Recall and F1&#8209;Score. Needs both models to have been run.</p>
+</div>
+
+<article class="card card-gold">
+  <div class="card-head"><span class="dot {% if comparison %}on{% endif %}"></span>Generate comparison</div>
+  {% if not ready %}
+    <p class="lead">Run both the LSTM and TCN algorithms first.</p>
+    <a class="btn btn-ghost" href="{% url 'lstm' %}">&larr; Go to LSTM</a>
+    <a class="btn btn-ghost" href="{% url 'tcn' %}">Go to TCN &rarr;</a>
+  {% else %}
+    <form action="{% url 'compare' %}" method="post" class="card-form">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-gold">Compare Algorithms</button>
+    </form>
+  {% endif %}
+</article>
+
+{% if metrics %}
+<section class="panel">
+  <h3>Model metrics</h3>
+  <table class="metrics-table">
+    <thead><tr><th>Algorithm</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1&#8209;Score</th></tr></thead>
+    <tbody>
+      {% for name, m in metrics.items %}
+      <tr>
+        <td class="algo algo-{{ name|lower }}">{{ name }}</td>
+        <td>{{ m.accuracy }}%</td>
+        <td>{{ m.precision }}%</td>
+        <td>{{ m.recall }}%</td>
+        <td>{{ m.fscore }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+{% if comparison %}
+<section class="panel">
+  <h3>LSTM vs TCN</h3>
+  <div class="chart-wrap"><canvas id="compareChart" height="110"></canvas></div>
+</section>
+<script id="compare-chart-data" type="application/json">{{ comparison_json|safe }}</script>
+{% endif %}
+
+<div class="pagination">
+  <a class="btn btn-ghost" href="{% url 'tcn' %}">&larr; Back: TCN</a>
+  <a class="btn btn-gold" href="{% url 'explain' %}">Next: Explain &rarr;</a>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "ids_app/base.html" %}
+{% block title %}Upload Dataset — XAI-IDS{% endblock %}
+{% block content %}
+<div class="page-head">
+  <p class="eyebrow">Step 1 of 8</p>
+  <h2>Upload Dataset</h2>
+  <p>Load the CIC&#8209;IDS2017 network-flow dataset, or upload your own CSV that has the same columns (including a <code>Label</code> column).</p>
+</div>
+
+<article class="card card-cyan">
+  <div class="card-head"><span class="dot {% if dataset_name %}on{% endif %}"></span>Choose a dataset</div>
+  <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data" class="card-form">
+    {% csrf_token %}
+    <select name="dataset_choice">
+      {% for d in datasets %}
+        <option value="{{ d }}" {% if d == dataset_name %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+    <input type="file" name="dataset_file" accept=".csv">
+    <button type="submit" class="btn btn-cyan">Upload &amp; Load</button>
+  </form>
+  {% if dataset_name %}<div class="card-note">Loaded: <strong>{{ dataset_name }}</strong></div>{% endif %}
+</article>
+
+{% if label_chart %}
+<section class="panel">
+  <h3>Class distribution &mdash; {{ dataset_name }}</h3>
+  <div class="chart-wrap"><canvas id="labelChart" height="110"></canvas></div>
+</section>
+<script id="label-chart-data" type="application/json">{{ label_chart_json|safe }}</script>
+{% endif %}
+
+<div class="pagination">
+  <span></span>
+  <a class="btn btn-cyan" href="{% url 'preprocess' %}">Next: Preprocess &rarr;</a>
+</div>
+{% endblock %}

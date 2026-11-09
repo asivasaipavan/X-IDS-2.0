@@ -1,0 +1,42 @@
+{% extends "ids_app/base.html" %}
+{% block title %}Preprocess Dataset — XAI-IDS{% endblock %}
+{% block content %}
+<div class="page-head">
+  <p class="eyebrow">Step 2 of 8</p>
+  <h2>Preprocess Dataset</h2>
+  <p>Every categorical column (including <code>Label</code>) is label-encoded. <code>Label</code> and <code>FlowDuration</code> are then dropped from the feature set, and the remaining numeric features are scaled with <code>StandardScaler</code>.</p>
+</div>
+
+<article class="card card-magenta">
+  <div class="card-head"><span class="dot {% if info %}on{% endif %}"></span>Run preprocessing</div>
+  {% if not has_dataset %}
+    <p class="lead">You need to upload a dataset first.</p>
+    <a class="btn btn-ghost" href="{% url 'upload' %}">&larr; Go to Upload</a>
+  {% else %}
+    <p class="lead">Dataset ready: <strong>{{ dataset_name }}</strong></p>
+    <form action="{% url 'preprocess' %}" method="post" class="card-form">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-magenta">Run Preprocessing</button>
+    </form>
+  {% endif %}
+</article>
+
+{% if info %}
+<section class="panel">
+  <h3>Preprocessing summary</h3>
+  <div class="stat-row">
+    <div class="stat-pill cyan"><div class="label">Rows</div><div class="value">{{ info.rows }}</div></div>
+    <div class="stat-pill magenta"><div class="label">Features</div><div class="value">{{ info.features }}</div></div>
+    <div class="stat-pill gold"><div class="label">Encoded columns</div><div class="value">{{ info.encoders }}</div></div>
+  </div>
+  {% if info.encoded_columns %}
+  <p class="lead">Encoded: {% for c in info.encoded_columns %}<code>{{ c }}</code>{% if not forloop.last %} {% endif %}{% endfor %}</p>
+  {% endif %}
+</section>
+{% endif %}
+
+<div class="pagination">
+  <a class="btn btn-ghost" href="{% url 'upload' %}">&larr; Back: Upload</a>
+  <a class="btn btn-magenta" href="{% url 'split' %}">Next: Split &rarr;</a>
+</div>
+{% endblock %}

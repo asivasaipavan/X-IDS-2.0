@@ -1,0 +1,59 @@
+{% extends "ids_app/base.html" %}
+{% block title %}Model Explanation — XAI-IDS{% endblock %}
+{% block content %}
+<div class="page-head">
+  <p class="eyebrow">Step 7 of 8</p>
+  <h2>Explainability (SHAP)</h2>
+  <p>A surrogate Random Forest is fit on the same train/test split, then explained with SHAP's <code>TreeExplainer</code> &mdash; the summary plot ranks feature importance, the violin plot shows the spread of each feature's contribution.</p>
+</div>
+
+{% if not has_split %}
+<article class="card card-cyan">
+  <p class="lead">You need to complete the Train / Test Split first.</p>
+  <a class="btn btn-ghost" href="{% url 'split' %}">&larr; Go to Split</a>
+</article>
+{% else %}
+<div class="explain-grid">
+  <article class="card card-cyan">
+    <div class="card-head"><span class="dot {% if summary_image %}on{% endif %}"></span>7a &middot; Summary Explanation</div>
+    <p class="lead">Which features drive the model's decisions most, overall.</p>
+    <form action="{% url 'explain_summary_action' %}" method="post" class="card-form">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-cyan">Explain (Summary)</button>
+    </form>
+  </article>
+
+  <article class="card card-magenta">
+    <div class="card-head"><span class="dot {% if violin_image %}on{% endif %}"></span>7b &middot; Violin Explanation</div>
+    <p class="lead">Distribution &amp; spread of each feature's contribution.</p>
+    {% if not has_summary %}
+      <p class="disabled-note">Generate the Summary explanation first.</p>
+    {% else %}
+    <form action="{% url 'explain_violin_action' %}" method="post" class="card-form">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-magenta">Explain (Violin)</button>
+    </form>
+    {% endif %}
+  </article>
+</div>
+{% endif %}
+
+{% if summary_image %}
+<section class="panel">
+  <h3>SHAP summary explanation</h3>
+  <img class="plot" src="data:image/png;base64,{{ summary_image }}" alt="SHAP summary plot">
+</section>
+{% endif %}
+
+{% if violin_image %}
+<section class="panel">
+  <h3>SHAP violin explanation</h3>
+  <img class="plot" src="data:image/png;base64,{{ violin_image }}" alt="SHAP violin plot">
+</section>
+{% endif %}
+
+<div class="pagination">
+  <a class="btn btn-ghost" href="{% url 'compare' %}">&larr; Back: Compare</a>
+  <a class="btn btn-cyan" href="{% url 'predict' %}">Next: Predict &rarr;</a>
+</div>
+{% endblock %}

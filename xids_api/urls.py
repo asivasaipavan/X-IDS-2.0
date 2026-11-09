@@ -1,0 +1,31 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("health/", views.health),
+    path("auth/csrf/", views.auth_csrf),
+    path("auth/register/", views.auth_register),
+    path("auth/login/", views.auth_login),
+    path("auth/logout/", views.auth_logout),
+    path("auth/me/", views.auth_me),
+    path("users/", views.user_management),
+    path("dashboard/summary/", views.dashboard_summary),
+    path("events/", views.events_list),
+    path("events/<int:event_id>/", views.event_detail),
+    path("events/<int:event_id>/explain/", views.explain_event),
+    path("events/<int:event_id>/acknowledge/", views.acknowledge_event),
+    path("monitor/status/", views.monitor_status),
+    path("monitor/interfaces/", views.monitor_interfaces),
+    path("monitor/start/", views.monitor_start),
+    path("monitor/stop/", views.monitor_stop),
+    path("pcap/analyze/", views.pcap_analyze),
+    path("ip/reputation/", views.ip_reputation),
+    path("ip/geo/", views.ip_geo),
+    path("topology/", views.topology),
+    path("response/block/", views.block),
+    path("response/unblock/", views.unblock),
+    path("response/rules/", views.firewall_rules),
+    path("reports/pdf/", views.report_pdf),
+    path("settings/", views.system_config),
+    path("settings/test-email/", views.test_email),
+]

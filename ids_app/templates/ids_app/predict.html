@@ -1,0 +1,54 @@
+{% extends "ids_app/base.html" %}
+{% block title %}Predict — XAI-IDS{% endblock %}
+{% block content %}
+<div class="page-head">
+  <p class="eyebrow">Step 8 of 8</p>
+  <h2>Predict Attack from Test Data</h2>
+  <p>Runs the trained LSTM on new, unlabelled flow records &mdash; defaults to the bundled <code>testData.csv</code>, or upload your own CSV (same columns, no <code>Label</code> needed).</p>
+</div>
+
+<article class="card card-gold">
+  <div class="card-head"><span class="dot {% if predictions %}on{% endif %}"></span>Run prediction</div>
+  {% if not ready %}
+    <p class="lead">You need to run the LSTM algorithm first.</p>
+    <a class="btn btn-ghost" href="{% url 'lstm' %}">&larr; Go to LSTM</a>
+  {% else %}
+    <form action="{% url 'predict' %}" method="post" enctype="multipart/form-data" class="card-form">
+      {% csrf_token %}
+      <input type="file" name="test_file" accept=".csv">
+      <button type="submit" class="btn btn-gold">Predict</button>
+    </form>
+  {% endif %}
+</article>
+
+{% if predictions %}
+<section class="panel">
+  <h3>Prediction results &mdash; {{ predict_source }}</h3>
+  <div class="table-scroll">
+  <table class="predict-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        {% for k in predictions.0.row.keys %}<th>{{ k }}</th>{% endfor %}
+        <th>Prediction</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in predictions %}
+      <tr>
+        <td>{{ r.index }}</td>
+        {% for v in r.row.values %}<td>{{ v }}</td>{% endfor %}
+        <td><span class="badge {% if r.prediction == 'Normal' %}badge-safe{% else %}badge-danger{% endif %}">{{ r.prediction }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endif %}
+
+<div class="pagination">
+  <a class="btn btn-ghost" href="{% url 'explain' %}">&larr; Back: Explain</a>
+  <a class="btn btn-gold" href="{% url 'home' %}">Finish: Overview &rarr;</a>
+</div>
+{% endblock %}
